@@ -57,6 +57,23 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: new Date()
+      },
+      // SOLUCIÓN
+      fats: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0.0
+      },
+      proteins: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0.0
+      },
+      carbohydrates: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0.0
+      },
+      calories: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0.0
       }
     })
   },

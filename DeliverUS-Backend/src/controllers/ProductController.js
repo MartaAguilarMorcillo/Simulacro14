@@ -36,8 +36,11 @@ const show = async function (req, res) {
   }
 }
 
+// SOLUCIÓN
 const create = async function (req, res) {
   let newProduct = Product.build(req.body)
+  const calorias = (newProduct.fats * 9) + (newProduct.proteins * 4) + (newProduct.carbohydrates * 4)
+  newProduct.calories = calorias
   try {
     newProduct = await newProduct.save()
     res.json(newProduct)
@@ -49,6 +52,7 @@ const create = async function (req, res) {
 const update = async function (req, res) {
   try {
     await Product.update(req.body, { where: { id: req.params.productId } })
+    await determinarCalorias(req.params.productId)
     const updatedProduct = await Product.findByPk(req.params.productId)
     res.json(updatedProduct)
   } catch (err) {
@@ -107,12 +111,46 @@ const popular = async function (req, res) {
   }
 }
 
+// SOLUCIÓN
+const determinarCalorias = async function (idProduct) {
+  const product = await Product.findByPk(idProduct)
+  const calorias = (product.fats * 9) + (product.proteins * 4) + (product.carbohydrates * 4)
+  await Product.update({ calories: calorias }, { where: { id: idProduct } })
+}
+
+// SOLUCIÓN
+const determinarCaloriasProductos = async function (req, res) {
+  try {
+    const products = await Product.findAll({ where: { restaurantId: req.params.restaurantId } })
+    for (const pr of products) {
+      const product = await Product.findByPk(pr.id)
+      const calorias = (product.fats * 9) + (product.proteins * 4) + (product.carbohydrates * 4)
+      await Product.update({ calories: calorias }, { where: { id: product.id } })
+    }
+    const updatedProducts = await Product.findAll({
+      where: {
+        restaurantId: req.params.restaurantId
+      },
+      include: [
+        {
+          model: ProductCategory,
+          as: 'productCategory'
+        }]
+    })
+    res.json(updatedProducts)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
 const ProductController = {
   indexRestaurant,
   show,
   create,
   update,
   destroy,
-  popular
+  popular,
+  determinarCalorias,
+  determinarCaloriasProductos
 }
 export default ProductController

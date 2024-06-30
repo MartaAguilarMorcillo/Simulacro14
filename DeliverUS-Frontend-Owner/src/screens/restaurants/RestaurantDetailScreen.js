@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, FlatList, ImageBackground, Image, Pressable } from 'react-native'
 import { showMessage } from 'react-native-flash-message'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { getDetail } from '../../api/RestaurantEndpoints'
+import { getDetail, getCalories } from '../../api/RestaurantEndpoints'
 import { remove } from '../../api/ProductEndpoints'
 import ImageCard from '../../components/ImageCard'
 import TextRegular from '../../components/TextRegular'
@@ -62,6 +62,11 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
       >
         <TextRegular numberOfLines={2}>{item.description}</TextRegular>
         <TextSemiBold textStyle={styles.price}>{item.price.toFixed(2)}€</TextSemiBold>
+        <TextSemiBold textStyle={styles.price}>Nutritional composition</TextSemiBold>
+        <TextSemiBold textStyle={styles.price}>  Fats: <TextRegular>{item.fats.toFixed(2)}</TextRegular></TextSemiBold>
+        <TextSemiBold textStyle={styles.price}>  Proteins: <TextRegular>{item.proteins.toFixed(2)}</TextRegular></TextSemiBold>
+        <TextSemiBold textStyle={styles.price}>  Carbohydrates: <TextRegular>{item.carbohydrates.toFixed(2)}</TextRegular></TextSemiBold>
+        <TextSemiBold textStyle={styles.price}>  Calories: <TextRegular>{item.calories.toFixed(2)}</TextRegular></TextSemiBold>
         {!item.availability &&
           <TextRegular textStyle={styles.availability }>Not available</TextRegular>
         }
@@ -117,6 +122,7 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
 
   const fetchRestaurantDetail = async () => {
     try {
+      await getCalories(route.params.id)
       const fetchedRestaurant = await getDetail(route.params.id)
       setRestaurant(fetchedRestaurant)
     } catch (error) {
@@ -237,12 +243,12 @@ const styles = StyleSheet.create({
     padding: 10,
     alignSelf: 'center',
     flexDirection: 'column',
-    width: '50%'
+    width: '33%'
   },
   actionButtonsContainer: {
     flexDirection: 'row',
     bottom: 5,
-    position: 'absolute',
-    width: '90%'
+    position: 'relative',
+    width: '95%'
   }
 })

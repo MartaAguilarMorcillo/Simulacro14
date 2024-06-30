@@ -1,4 +1,5 @@
 import { Restaurant, Product, RestaurantCategory, ProductCategory } from '../models/models.js'
+import Sequelize from 'sequelize'
 
 const index = async function (req, res) {
   try {
@@ -55,6 +56,9 @@ const show = async function (req, res) {
       include: [{
         model: Product,
         as: 'products',
+        where: {
+          calories: { [Sequelize.Op.lte]: 1000.0 }
+        },
         include: { model: ProductCategory, as: 'productCategory' }
       },
       {
